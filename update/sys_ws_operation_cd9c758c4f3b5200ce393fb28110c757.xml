@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_8589_integration/incident_plus/closeOldIncidents</default_operation_uri>
+        <enforce_acl/>
+        <http_method>POST</http_method>
+        <name>Close Old Incidents</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+	var gr = new GlideRecord('incident');
+	var body = request.body.data;
+	var return_array = [];
+	var max = 3;
+	var daysAgoParam = body.daysAgo;
+	if (daysAgoParam != null ) {
+		var daysAgo = gs.daysAgo(daysAgoParam);
+		gr.addActiveQuery();
+		gr.addQuery('sys_updated_on', '<=', daysAgo);
+		gr.query();
+		var count = 0;
+		while(gr.next() ){
+			gr.state = 7;
+			gr.update();
+			return_array.push( {"Closed Incident " :gr.number.toString()} );
+			if (++count == max) {
+				break;
+			}
+		}
+	}
+	return return_array;
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_8589_integration/v2/incident_plus/closeOldIncidents</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/closeOldIncidents</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2016-05-30 08:41:18</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>cd9c758c4f3b5200ce393fb28110c757</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Close Old Incidents</sys_name>
+        <sys_package display_value="Integration 301" source="x_8589_integration">e1a3710c4ff75200ce393fb28110c7fb</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Integration 301">e1a3710c4ff75200ce393fb28110c7fb</sys_scope>
+        <sys_update_name>sys_ws_operation_cd9c758c4f3b5200ce393fb28110c757</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2016-05-30 08:41:18</sys_updated_on>
+        <web_service_definition display_value="Incident Plus">dde37d884f3b5200ce393fb28110c727</web_service_definition>
+        <web_service_version display_value="v2">cb5c754c4f3b5200ce393fb28110c7eb</web_service_version>
+    </sys_ws_operation>
+</record_update>
